@@ -152,6 +152,30 @@ function collisionDetection() {
   }
 }
 
+canvas.addEventListener("touchstart", onTouch, { passive: false });
+canvas.addEventListener("touchmove", onTouch, { passive: false });
+canvas.addEventListener("touchend", onTouchEnd, { passive: false });
+canvas.addEventListener("touchcancel", onTouchEnd, { passive: false });
+
+function onTouch(e) {
+  e.preventDefault(); // stop page scrolling while playing
+
+  const t = e.touches[0];
+  const rect = canvas.getBoundingClientRect();
+  const x = t.clientX - rect.left; // touch x inside canvas
+
+  const half = rect.width / 2;
+
+  leftPressed = x < half;
+  rightPressed = x >= half;
+}
+
+function onTouchEnd(e) {
+  e.preventDefault();
+  leftPressed = false;
+  rightPressed = false;
+}
+
 document.addEventListener("keydown", keyDownHandler);
 document.addEventListener("keyup", keyUpHandler);
 const runButton = document.getElementById("runButton");
