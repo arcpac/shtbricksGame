@@ -152,30 +152,22 @@ function collisionDetection() {
   }
 }
 
-canvas.addEventListener("touchstart", onTouch, { passive: false });
-canvas.addEventListener("touchmove", onTouch, { passive: false });
-canvas.addEventListener("touchend", onTouchEnd, { passive: false });
-canvas.addEventListener("touchcancel", onTouchEnd, { passive: false });
+canvas.addEventListener(
+  "touchmove",
+  (e) => {
+    e.preventDefault();
+    const t = e.touches[0];
+    const rect = canvas.getBoundingClientRect();
+    const x = t.clientX - rect.left;
 
-function onTouch(e) {
-  e.preventDefault(); // stop page scrolling while playing
+    // convert touch position to paddle position
+    paddleX = x - paddleWidth / 2;
 
-  const t = e.touches[0];
-  const rect = canvas.getBoundingClientRect();
-  const x = t.clientX - rect.left; // touch x inside canvas
-
-  const half = rect.width / 2;
-
-  leftPressed = x < half;
-  rightPressed = x >= half;
-}
-
-function onTouchEnd(e) {
-  e.preventDefault();
-  leftPressed = false;
-  rightPressed = false;
-}
-
+    // clamp
+    paddleX = Math.max(0, Math.min(canvas.width - paddleWidth, paddleX));
+  },
+  { passive: false },
+);
 document.addEventListener("keydown", keyDownHandler);
 document.addEventListener("keyup", keyUpHandler);
 const runButton = document.getElementById("runButton");
