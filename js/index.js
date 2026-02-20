@@ -8,9 +8,10 @@ spongeImage.src = "images/sponge.png";
 
 let x = canvas.width / 2;
 let y = canvas.height - 30;
-let dx = 2;
+let dx = Math.random(2);
 let dy = -2;
 let ballRadius = 10;
+let lives = 2;
 
 let paddleHeight = 20;
 let paddleWidth = 80;
@@ -52,8 +53,13 @@ function drawBricks() {
     }
   }
 }
-
 // ========================
+
+function showLives() {
+  ctx.font = "23px Arial";
+  ctx.fillStyle = "red";
+  ctx.fillText(`Lives ${lives}`, canvas.width - 120, 20);
+}
 
 function drawScore() {
   ctx.font = "16px Arial";
@@ -86,21 +92,30 @@ function draw() {
   drawBricks();
   drawScore();
   collisionDetection();
+  showLives();
   x += dx;
   y += dy;
 
-  if (y + dy < ballRadius - paddleHeight) {
+  if (y + dy < ballRadius) {
     dy = -dy;
   } else if (y + dy + paddleHeight > canvas.height - ballRadius) {
     if (x > paddleX && x < paddleX + paddleWidth) {
       dy = -dy;
     } else {
-      alert("GAME OVER");
-      document.location.reload();
-      clearInterval(interval);
+      lives--;
+      if (!lives) {
+        alert("GAME OVER");
+        document.location.reload();
+        clearInterval(interval);
+      } else {
+        x = canvas.width / 2;
+        y = canvas.height - 30;
+        dx = Math.random(2);
+        dy = -2;
+      }
     }
   }
-  if (x + dx < ballRadius + 30 || x + dx > canvas.width - ballRadius) dx = -dx;
+  if (x + dx < ballRadius || x + dx > canvas.width - ballRadius) dx = -dx;
 
   if (rightPressed) {
     paddleX = Math.min(paddleX + 7, canvas.width - paddleWidth);
