@@ -2,9 +2,7 @@ const canvas = document.getElementById("myCanvas");
 const ctx = canvas.getContext("2d");
 const brickImg = new Image();
 const spongeImage = new Image();
-const winningsound = new Audio("sounds/scream.mp3");
-winningsound.preload = "auto";
-winningsound.volume = 0.9;
+
 brickImg.src = "images/brick.png";
 spongeImage.src = "images/sponge.png";
 
@@ -41,10 +39,6 @@ for (let c = 0; c < brickColumnCount; c++) {
   }
 }
 
-function playwinningsound() {
-  winningsound.currentTime = 0;
-  winningsound.play().catch(() => {});
-}
 function drawBricks() {
   for (let c = 0; c < brickColumnCount; c++) {
     for (let r = 0; r < brickRowCount; r++) {
@@ -152,7 +146,6 @@ function collisionDetection() {
 
             clearInterval(interval);
           }
-          if (score === 3) playwinningsound();
         }
       }
     }
@@ -167,16 +160,24 @@ canvas.addEventListener(
     const rect = canvas.getBoundingClientRect();
     const x = t.clientX - rect.left;
 
-    // convert touch position to paddle position
     paddleX = x - paddleWidth / 2;
 
-    // clamp
     paddleX = Math.max(0, Math.min(canvas.width - paddleWidth, paddleX));
   },
   { passive: false },
 );
+
+function mouseMoveHandler(e) {
+  const relativeX = e.clientX - canvas.offsetLeft;
+  if (relativeX > 0 && relativeX < canvas.width) {
+    paddleX = relativeX - paddleWidth / 2;
+  }
+  console.log("rx: ", relativeX);
+}
+
 document.addEventListener("keydown", keyDownHandler);
 document.addEventListener("keyup", keyUpHandler);
+document.addEventListener("mousemove", mouseMoveHandler);
 const runButton = document.getElementById("runButton");
 
 runButton.addEventListener("click", () => {
