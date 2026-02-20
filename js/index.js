@@ -2,7 +2,9 @@ const canvas = document.getElementById("myCanvas");
 const ctx = canvas.getContext("2d");
 const brickImg = new Image();
 const spongeImage = new Image();
-
+const winningsound = new Audio("sounds/scream.mp3");
+winningsound.preload = "auto";
+winningsound.volume = 0.9;
 brickImg.src = "images/brick.png";
 spongeImage.src = "images/sponge.png";
 
@@ -12,7 +14,7 @@ let dx = 2;
 let dy = -2;
 let ballRadius = 10;
 
-let paddleHeight = 10;
+let paddleHeight = 20;
 let paddleWidth = 80;
 let paddleX = (canvas.width - paddleWidth) / 2;
 
@@ -39,6 +41,10 @@ for (let c = 0; c < brickColumnCount; c++) {
   }
 }
 
+function playwinningsound() {
+  winningsound.currentTime = 0;
+  winningsound.play().catch(() => {});
+}
 function drawBricks() {
   for (let c = 0; c < brickColumnCount; c++) {
     for (let r = 0; r < brickRowCount; r++) {
@@ -89,9 +95,9 @@ function draw() {
   x += dx;
   y += dy;
 
-  if (y + dy < ballRadius) {
+  if (y + dy < ballRadius - paddleHeight) {
     dy = -dy;
-  } else if (y + dy > canvas.height - ballRadius) {
+  } else if (y + dy + paddleHeight > canvas.height - ballRadius) {
     if (x > paddleX && x < paddleX + paddleWidth) {
       dy = -dy;
     } else {
@@ -100,7 +106,7 @@ function draw() {
       clearInterval(interval);
     }
   }
-  if (x + dx < ballRadius || x + dx > canvas.width - ballRadius) dx = -dx;
+  if (x + dx < ballRadius + 30 || x + dx > canvas.width - ballRadius) dx = -dx;
 
   if (rightPressed) {
     paddleX = Math.min(paddleX + 7, canvas.width - paddleWidth);
@@ -143,9 +149,10 @@ function collisionDetection() {
           score++;
           if (score === brickColumnCount * brickRowCount) {
             alert("YOU WON!");
-            document.location.reload();
+
             clearInterval(interval);
           }
+          if (score === 3) playwinningsound();
         }
       }
     }
